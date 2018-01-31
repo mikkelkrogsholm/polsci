@@ -1,0 +1,345 @@
+---
+output:
+  html_document: default
+  word_document: default
+---
+Research Article   
+Published in *Open Quantitative Sociology & Political Science (OQSPS)*  `r format(Sys.Date(), "%d, %m, %Y")`     
+Submitted `r format(Sys.Date(), "%d, %m, %Y")`       
+
+# OQSPS Red-Green Correlations in Danish Party Ideologies
+
+### Mikkel Freltoft Krogsholm 
+
+<br>
+
+**Abstract**     
+By using data collected from candidates from the danish municipal election in 2017 and creating two indexes; one for the traditional "left-right" scale and one for a new "green" scale, we see that the two follow eachother very closely and are almost interchangeable. The "reddest" parties are indeed also the "greenest". 
+
+In a danish context therefore we can conclude that green is the new red.
+
+**Key words**: left-right scale, socialism, liberalism, green movement
+
+**Introduction**     
+This article looks into the relationship between the "red" and the "green" political ideologies. By creating indexes that measure the two I look at how closely they are related in a danish context. 
+
+Is the green ideology a separate independent movement or does it actually belong as a subset to the older "left-right" ideologies that traditionally have been mostly concerned with questions of redistribution of wealth?
+
+**Method**     
+The survey data used in this article comes from the danish political news site [Altinget](https://www.altinget.dk/kandidater/kv17/). Every election they create so called *candidate tests*, where the candidates in the elections can fill out a profile that voters can use to discover candidates they agree or disagree with. Both candidates and voters fill out the same survey and the results are then compared with eachother to find the best match in political convictions.     
+
+This data used in this article is from the anwers to the candidate test for the nationwide municipal election in Denmark in november of 2017.
+
+```{r load_data, message=FALSE, warning=FALSE, include=FALSE}
+library(tidyverse)
+options(scipen = 999)
+
+table_nums <- captioner::captioner(prefix = "Table")
+figure_nums <- captioner::captioner(prefix = "Figure")
+
+
+parties <- tibble(
+  party_letter = c("A", "B", "C", "D", "F", "I", "O", "V", "Ø", "Å"),
+  dk = c("Socialdemokratiet", "Radikale Venstre", "Det Konservative Folkeparti",
+             "Nye Borgerlige", "SF - Socialistisk Folkeparti","Liberal Alliance",
+             "Dansk Folkeparti","Venstre, Danmarks Liberale Parti",
+             "Enhedslisten - De Rød-Grønne","Alternativet"),
+  en = c("The Danish Social Democrats", "The Danish Social-Liberal Party",
+          "Conservative People's Party", "The New Right",
+          "Socialist People's Party", "Liberal Alliance",
+          "Danish People's Party", "Venstre, Liberal Party of Denmark",
+          "The Red-Green Alliance", "The Alternative")
+)
+
+analysis_data <- readRDS("~/polsci/red_is_green/analysis_data.RDS")
+questions <- readRDS("~/polsci/red_is_green/questions.RDS")
+
+```
+
+There are 9,557 candidates listed on the Altinget website. In Denmark it is usual to see quite a lot of local candidates running on local lists in municipal elections. This article though will only focus on candidates from the ten major parties that are either already elected to Folketinget (Danish Parliament) or stand a very good chance of it in the national polls. These ten parties are:     
+```{r, echo=FALSE}
+tab_party_overview <- table_nums(name = "party_overview",  caption = "Overview of Danish parties")
+```
+
+##### `r tab_party_overview`
+```{r party_overview, echo=FALSE, message=FALSE, warning=FALSE}
+parties %>% knitr::kable(col.names = c("Party letter", "Party name (Danish)", "Party name (English)"))
+```
+<br>
+
+The data set is narrowed from 9.557 candidates by removing candidates not belonging to the ten parties listed above and candidates that have not filled out the survey. This brings the data set to a total of 5.883 candidates. They are distributed among the parties as follows: 
+
+```{r, echo=FALSE}
+tab_cand_overview <- table_nums(name = "cand_overview",  caption = "Distribution of candidates by party")
+```
+
+##### `r tab_cand_overview`
+```{r cand_distribution, echo=FALSE}
+
+analysis_data %>% 
+  count(party_letter) %>%
+  left_join(parties[,-2], ., by = "party_letter") %>%
+  arrange(-n) %>%
+  knitr::kable(col.names = c("Party letter", "Party name", "N"), format.args = list(big.mark = ','))
+
+```
+
+The candidates answered 25 different questions. These questions are:
+
+```{r, echo=FALSE}
+tab_questions <- table_nums(name = "questions",  caption = "Overview of questions")
+```
+
+##### `r tab_questions`
+```{r question_overview, echo=FALSE}
+questions %>% knitr::kable(col.names = c("ID", "Danish wording", "English translation"))
+```
+
+They answer all the questions on a five-point scale from "strongly agree", "agree", "don't know", "disagree", "strongly disagree".
+
+*Indexes*     
+
+From these questions I will create two indexes to measure two underlying political orientations:
+
+1) the traditional "left-right" orientation with regard to taxation and redistribution of wealth.
+2) a "green" axis regarding the orientation towards ecology, recycling and sustainability.
+
+The left-right axis is build with the candidates answers to the following questions:
+
+```{r, echo=FALSE}
+tab_left_right <- table_nums(name = "left_right",  caption = "Questions used for left-right index")
+```
+
+##### `r tab_left_right`
+```{r left_right_qs, echo=FALSE, message=FALSE, warning=FALSE}
+tax <- c("q_01", "q_03","q_04", "q_05")
+questions %>% filter(q %in% tax) %>%  knitr::kable(col.names = c("ID", "Danish wording", "English translation"))
+```
+
+And the green axis is build with the candidates answers to the following questions:
+
+```{r, echo=FALSE}
+tab_green <- table_nums(name = "green",  caption = "Questions used for green index")
+```
+
+##### `r tab_green`
+```{r green_qs, echo=FALSE, message=FALSE, warning=FALSE}
+green <- c("q_15", "q_16",  "q_19", "q_23", "q_24")
+questions %>% filter(q %in% green) %>%  knitr::kable(col.names = c("ID", "Danish wording", "English translation"))
+```
+
+```{r alphas, echo=FALSE}
+tax_alpha <- analysis_data[tax] %>% psych::alpha()
+green_alpha <- analysis_data[green] %>% psych::alpha()
+```
+
+I will asses the realiability of the indexes by using Cronbach's Alpha. "Cronbach's alpha will generally increase as the intercorrelations among test items increase, and is thus known as an internal consistency estimate of reliability of test scores." (Wikipedia 2017-01-01). In plain english it measures if the items in the index pull in the same direction and can be considered indicators of the same underlying trend.
+
+The standarized alpha for the "left-right" index is **`r round(tax_alpha$total$std.alpha, 2)`** and the alpha will not increase if I drop any of the variables in the index:
+
+```{r, echo=FALSE}
+tab_alpha_overview_tax <- table_nums(name = "alpha_overview_tax",  caption = "Cronbachs alpha values for the left-right index")
+```
+
+##### `r tab_alpha_overview_tax`
+```{r alpha_out_tax, echo=FALSE}
+bind_rows(tax_alpha$total,
+          tax_alpha$alpha.drop) %>%
+  mutate("if_dropped" = c("", rownames(tax_alpha$alpha.drop)) ) %>%
+  select(if_dropped, raw_alpha:`S/N`) %>% knitr::kable()
+```
+
+
+The standarized alpha for the "green" index is **`r round(green_alpha$total$std.alpha, 2)`** and the alpha will not increase if I drop any of the variables in the index:
+
+```{r, echo=FALSE}
+tab_alpha_overview_green <- table_nums(name = "alpha_overview_green",  caption = "Cronbachs alpha values for the green index")
+```
+
+##### `r tab_alpha_overview_green`
+```{r alpha_out_green, echo=FALSE}
+bind_rows(green_alpha$total,
+          green_alpha$alpha.drop) %>%
+  mutate("if_dropped" = c("", rownames(green_alpha$alpha.drop)) ) %>%
+  select(if_dropped, raw_alpha:`S/N`) %>% knitr::kable()
+```
+
+Based on the alpha values for our two indexes (both above .8) I can conclude that they have good reliability and are good indexes. (Yockey 2008).
+
+I then reverse code the "green" questions so that if a candidate wanted more or less of taxation and sustainability then she would answer in the same direction.
+
+```{r create_indexes, echo=FALSE}
+analysis_data[green] <- 6 - analysis_data[green]
+
+index_df <- tibble(
+  party_letter = analysis_data$party_letter,
+  tax_index = analysis_data[tax] %>% rowMeans(),
+  green_index = analysis_data[green] %>% rowMeans()
+)
+
+index_party <- index_df %>%
+  group_by(party_letter) %>%
+  summarise_all("median")
+```
+
+In order to create the the final index for each party I calculate the scores for each candidate on the two indexes and summarize the median scores for each of the parties on the two indexes.
+
+I am choosing the median as the method to summarize the party scores. The median is the number that separates the upper and the lower half of a population from each other. The median is the observation in the middle and by that deffinition whatever side the median candidate choose will have the majority.
+
+'There is no more transparent nor easily communicated explanation of political outcomes in a democracy than that all political outcomes reflect median voter preferences.' (Congleton 2003:1). And by extension I am assuming that the political preferences of a party reflects the median candidates preferences. 
+
+**Results**     
+The results show a very strong connection between wanting more taxation and wanting more green.
+
+Lets first see how all the voters distribute themselves on a plot with the traditional "left-right" index and the new "green" index.
+
+The plot shows the median candidates position on the two indexes (marked by the party letter). The area surrounding the party letters is the area where 50 per cent of each party's candidates that are closest to the median candidate reside. This is calculated by calculating the cartesian minimum distance between two geometries (the median candidate and every other candidate) in the units of the current projection, ie the coordinate system comprised of the two indices.
+
+I do this because all parties have outlier candidates - noise basically - so by focusing on the candidates closest to the median candidate we see a more fair representation of the party's position on the issue.
+
+```{r, echo=FALSE}
+fig_cand_placement <- figure_nums(name = "cand_placement",  caption = "Candidates placement on the two indices")
+```
+
+##### `r fig_cand_placement`
+```{r median_voters_half, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+library(rgeos); library(sp)
+find_hull <- function(plotdata) plotdata[chull(plotdata$tax_index, plotdata$green_index), ]
+plotdata <- map_df(unique(index_df$party_letter), function(party){
+
+  my_party <- index_df %>% filter(party_letter == party)
+
+  party_median <- my_party %>%
+    summarise(tax_index_median = median(tax_index),
+              green_index_median = median(green_index))
+
+  set1sp <- SpatialPoints(party_median)
+  set2sp <- SpatialPoints(my_party[, -1])
+
+  point_dist<- gDistance(set1sp, set2sp, byid=TRUE)
+
+  my_party %>%
+    mutate(dist = point_dist[,1]) %>%
+    arrange(dist) %>%
+    slice(1:(ceiling(n()*.50)))
+    # slice(1:100)
+
+})
+
+party_median <- index_df %>%
+  group_by(party_letter) %>%
+  summarise(tax_index_median = median(tax_index),
+            green_index_median = median(green_index))
+
+hulls <- plotdata %>% split(.$party_letter) %>% map_df(~ find_hull(.))
+
+party_colors <- structure(c("#E32F3B", "#E52B91", "#0F854B", "#00505c", "#9C1D2A", 
+"#EF8535", "#F0AC55", "#005078", "#0F84BB", "#731525", "#5AFF5A"), 
+.Names = c("A", "B", "C", "D", "F", "I", "K", "O", "V", "Ø", "Å"))
+
+ggplot() +
+  geom_polygon(data = hulls, aes(tax_index, green_index, group = party_letter,
+                                 fill = party_letter), alpha = 0.5,
+               show.legend = FALSE) +
+  geom_label(data = party_median, aes(tax_index_median, green_index_median,
+                                      fill = party_letter, label = party_letter),
+             color = "white", show.legend = FALSE, label.r = unit(0.5, "lines"),
+             label.padding = unit(0.3, "lines")) +
+  ylim(1,5) + xlim(1,5) +
+  scale_fill_manual(values = party_colors) +
+  scale_color_manual(values = party_colors) +
+  coord_fixed() +
+  labs(
+    y = "Wants more green -->",
+    x = "Wants more taxation -->"
+  ) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+There are overlaps between the areas of each party but also a very clear linear trend; the more a party favors a green policy the more they will favor a policy proposing higher taxation. 
+
+When we look at the summary tables, then each party has the following score on the indexes:
+
+```{r, echo=FALSE}
+tab_indices_overview <- table_nums(name = "indices_overview",  caption = "Overview of party values on the indices")
+```
+
+##### `r tab_indices_overview`
+```{r, echo = FALSE}
+index_party %>% arrange(tax_index) %>%
+  knitr::kable(col.names = c("Party", "Left-Right", "Green"), digits = 2)
+```
+
+```{r cor, echo = FALSE}
+my_cor <- cor(index_party[, -1])
+my_cor <- my_cor[1,2]
+my_cor <- round(my_cor, 2)
+```
+
+As you can see the two indexes follow eachother very closely and they have a correlation of **`r my_cor`**, which is quite high.
+
+If I plot the two indexes against each other the pattern show very clearly:
+
+```{r, echo=FALSE}
+fig_party_placement <- figure_nums(name = "party_placement",  caption = "Party placement on the two indices")
+```
+
+##### `r fig_party_placement`
+```{r index_plot, echo = FALSE}
+
+fit <- lm(green_index ~ tax_index, data = index_party)
+my_fit <- broom::glance(fit)
+
+r2 <- round(my_fit$adj.r.squared, 2)
+pv <- round(my_fit$p.value, 4)
+
+ggplot(index_party, aes(tax_index, green_index)) +
+  geom_smooth(method = "lm", se = FALSE, color = "gray") +
+  geom_label(aes(fill = party_letter, label = party_letter),
+             color = "white", show.legend = FALSE, label.r = unit(0.5, "lines"),
+             label.padding = unit(0.3, "lines")) +
+  scale_color_manual(values = party_colors) +
+  scale_fill_manual(values = party_colors) +
+  ylim(1,5) + xlim(1,5) +
+  coord_fixed() +
+  labs(
+    y = "Wants more green -->",
+    x = "Wants more taxation -->",
+    caption = paste0("R^2: ", r2, ", P-value: ", pv)
+  ) +
+  theme_minimal() + 
+  theme(panel.grid = element_blank())
+
+```
+
+The fitted linear model on the plot has an R^2^ of `r r2` and a P-value of `r pv`. All in all I can conclude that there is indeed a very strong connection between wanting more taxation and wanting more green.
+
+```{r, echo=FALSE}
+tab_lm_overview <- table_nums(name = "lm_overview",  caption = "Model summary")
+```
+
+##### `r tab_lm_overview`
+```{r lm_out, echo = FALSE}
+my_fit %>% knitr::kable()
+```
+
+
+**Discussion**     
+Part of the socialist agenda is controlling agenda. Controlling the means of production, controlling certain behaviours and so on. It is an agenda focused on the collective before the individual. Socialisms opposite, liberalism, on the other hand is focused on limiting control and government. It is an agenda focused on the individual before the collective.
+
+The green agenda is also a "limiting" or "controlling" agenda. It is an agenda focused on changing peoples behaviour or habits so the people behave in a certain way - ie. eats only organic, recycles or drive electric vehicles. It therefore makes logical sense that the "red" and the "green" movement share a common ground.
+
+Perhaps it is this common ground that we are actually measuring with the two indexes. That would explain why they follow eachother so closely. Maybe it is the underlying theme of the collective vs the individual that our two indexes are measuring. If this is true, then the green movement is now a separate movement but actually a submovement of the red movement.
+
+**Conclusion**     
+By creating an index to measure the postition of danish parties on the traditional "left-right" scale and a new index to measure the parties position on a "green" scale we see that these follow eachother very closely. In a danish context there does not seem to be a difference between red and green parties. They are in fact the same. Green is the new red.
+
+**Acknowledgements**     
+Special acknowledgement should go to Altinget who collected the data from all the candidates.
+
+**References**  
+Congleton, Roger. (2003). The Median Voter Model. 707-712. DOI: 10.1007/978-0-306-47828-4_142.      
+Wikipedia 2017-01-01 https://en.wikipedia.org/wiki/Cronbach%27s_alpha       
+Yockey, Ronald D. (2008). SPSS Demystified. A Step-by-Step Guide to Successful Data Analysis,
+Upper Saddle River: Pearson Prentice Hall.     
