@@ -13,19 +13,25 @@ Submitted `r format(Sys.Date(), "%d, %m, %Y")`
 
 <br>
 
-**Abstract**     
-By using data collected from candidates from the danish municipal election in 2017 and creating two indexes; one for the traditional "left-right" scale and one for a new "green" scale, we see that the two follow eachother very closely and are almost interchangeable. The "reddest" parties are indeed also the "greenest". 
+#### Abstract
+By using data collected from candidates from the danish municipal election in 2017 and creating two indices - one for the traditional "socialist-capitalist" scale and one for a new "green" scale - I show that the two follow eachother very closely and are almost interchangeable. The "reddest" parties are indeed also the "greenest". 
 
-In a danish context therefore we can conclude that green is the new red.
+**Key words**: socialist-capitalist scale, left-right scale, socialism, capitalism, liberalism, green movement
 
-**Key words**: left-right scale, socialism, liberalism, green movement
+#### Introduction
+This paper looks into the relationship between the "red" and the "green" political ideologies. By creating indices that measure the two I look at how closely they are related in a danish context. 
 
-**Introduction**     
-This article looks into the relationship between the "red" and the "green" political ideologies. By creating indexes that measure the two I look at how closely they are related in a danish context. 
+Because, where does the green movement belong? Is the green movement a separate independent movement or does it actually belong as a subset to the older "socialist-capitalist" ideologies that traditionally have been mostly concerned with questions of redistribution of wealth?
 
-Is the green ideology a separate independent movement or does it actually belong as a subset to the older "left-right" ideologies that traditionally have been mostly concerned with questions of redistribution of wealth?
+In Denmark we often associate the green movement with the socialist leaning parties and the most socialist party in the Danish parliament "The Red-Green Alliance" even bears the word "green" it in its name. But now and again we also hear about how green the danish conservatives are (Pedersen 2014), even though the conservatives are firmly planted on the capitalist side of the traditional socialist-capitalist political spectrum.
 
-**Method**     
+The socialist parties see the green movement as a natural part of the socialist movement because it addresses issues and problems created by capitalism. As "The Red-Green Alliance" writes on their website: "The fact that the capitalist society is based on private property and market economy has serious consequences not only for society and for individuals but also for nature and the environment." (translated from Danish, Enhedslisten 2018.).
+
+Danish conservative thinkers on the other hand see the care for the environment as part of a contract with future generations: "A healthy and sustainable environment is the prerequisite of life not only for the generations that were before us, not just for us living, but also for the future generations that come after us." (translated from Danish, Pedersen 2014).
+
+So where does the green movement belong? As an independent movement that unites both conservatives and socialists or is it in fact just a sub-movement of the larger socialist-capitalist ideological spectrum?
+
+#### Method  
 The survey data used in this article comes from the danish political news site [Altinget](https://www.altinget.dk/kandidater/kv17/). Every election they create so called *candidate tests*, where the candidates in the elections can fill out a profile that voters can use to discover candidates they agree or disagree with. Both candidates and voters fill out the same survey and the results are then compared with eachother to find the best match in political convictions.     
 
 This data used in this article is from the anwers to the candidate test for the nationwide municipal election in Denmark in november of 2017.
@@ -97,17 +103,17 @@ questions %>% knitr::kable(col.names = c("ID", "Danish wording", "English transl
 
 They answer all the questions on a five-point scale from "strongly agree", "agree", "don't know", "disagree", "strongly disagree".
 
-*Indexes*     
+##### Indices    
 
-From these questions I will create two indexes to measure two underlying political orientations:
+From these questions I will create two indices to measure two underlying political orientations:
 
-1) the traditional "left-right" orientation with regard to taxation and redistribution of wealth.
+1) the traditional "socialist-capitalist" orientation with regard to taxation and redistribution of wealth.
 2) a "green" axis regarding the orientation towards ecology, recycling and sustainability.
 
-The left-right axis is build with the candidates answers to the following questions:
+The socialist-capitalist axis is build with the candidates answers to the following questions:
 
 ```{r, echo=FALSE}
-tab_left_right <- table_nums(name = "left_right",  caption = "Questions used for left-right index")
+tab_left_right <- table_nums(name = "left_right",  caption = "Questions used for socialist-capitalist index")
 ```
 
 ##### `r tab_left_right`
@@ -133,12 +139,12 @@ tax_alpha <- analysis_data[tax] %>% psych::alpha()
 green_alpha <- analysis_data[green] %>% psych::alpha()
 ```
 
-I will asses the realiability of the indexes by using Cronbach's Alpha. "Cronbach's alpha will generally increase as the intercorrelations among test items increase, and is thus known as an internal consistency estimate of reliability of test scores." (Wikipedia 2017-01-01). In plain english it measures if the items in the index pull in the same direction and can be considered indicators of the same underlying trend.
+I will asses the realiability of the indices by using Cronbach's Alpha. "Cronbach's alpha will generally increase as the intercorrelations among test items increase, and is thus known as an internal consistency estimate of reliability of test scores." (Wikipedia 2017-01-01). In plain english it measures if the items in the index pull in the same direction and can be considered indicators of the same underlying trend.
 
-The standarized alpha for the "left-right" index is **`r round(tax_alpha$total$std.alpha, 2)`** and the alpha will not increase if I drop any of the variables in the index:
+The standarized alpha for the "socialist-capitalist" index is **`r round(tax_alpha$total$std.alpha, 2)`** and the alpha will not increase if I drop any of the variables in the index:
 
 ```{r, echo=FALSE}
-tab_alpha_overview_tax <- table_nums(name = "alpha_overview_tax",  caption = "Cronbachs alpha values for the left-right index")
+tab_alpha_overview_tax <- table_nums(name = "alpha_overview_tax",  caption = "Cronbachs alpha values for the socialist-capitalist index")
 ```
 
 ##### `r tab_alpha_overview_tax`
@@ -164,11 +170,11 @@ bind_rows(green_alpha$total,
   select(if_dropped, raw_alpha:`S/N`) %>% knitr::kable()
 ```
 
-Based on the alpha values for our two indexes (both above .8) I can conclude that they have good reliability and are good indexes. (Yockey 2008).
+Based on the alpha values for our two indices (both above .8) I can conclude that they have good reliability and are good indices. (Yockey 2008).
 
 I then reverse code the "green" questions so that if a candidate wanted more or less of taxation and sustainability then she would answer in the same direction.
 
-```{r create_indexes, echo=FALSE}
+```{r create_indices, echo=FALSE}
 analysis_data[green] <- 6 - analysis_data[green]
 
 index_df <- tibble(
@@ -182,18 +188,18 @@ index_party <- index_df %>%
   summarise_all("median")
 ```
 
-In order to create the the final index for each party I calculate the scores for each candidate on the two indexes and summarize the median scores for each of the parties on the two indexes.
+In order to create the the final index for each party I calculate the scores for each candidate on the two indices and summarize the median scores for each of the parties on the two indices.
 
 I am choosing the median as the method to summarize the party scores. The median is the number that separates the upper and the lower half of a population from each other. The median is the observation in the middle and by that deffinition whatever side the median candidate choose will have the majority.
 
 'There is no more transparent nor easily communicated explanation of political outcomes in a democracy than that all political outcomes reflect median voter preferences.' (Congleton 2003:1). And by extension I am assuming that the political preferences of a party reflects the median candidates preferences. 
 
-**Results**     
+#### Results    
 The results show a very strong connection between wanting more taxation and wanting more green.
 
-Lets first see how all the voters distribute themselves on a plot with the traditional "left-right" index and the new "green" index.
+Lets first see how all the voters distribute themselves on a plot with the traditional "socialist-capitalist" index and the new "green" index.
 
-The plot shows the median candidates position on the two indexes (marked by the party letter). The area surrounding the party letters is the area where 50 per cent of each party's candidates that are closest to the median candidate reside. This is calculated by calculating the cartesian minimum distance between two geometries (the median candidate and every other candidate) in the units of the current projection, ie the coordinate system comprised of the two indices.
+The plot shows the median candidates position on the two indices (marked by the party letter). The area surrounding the party letters is the area where 50 per cent of each party's candidates that are closest to the median candidate reside. This is calculated by calculating the cartesian minimum distance between two geometries (the median candidate and every other candidate) in the units of the current projection, ie the coordinate system comprised of the two indices.
 
 I do this because all parties have outlier candidates - noise basically - so by focusing on the candidates closest to the median candidate we see a more fair representation of the party's position on the issue.
 
@@ -257,9 +263,9 @@ ggplot() +
   theme(panel.grid = element_blank())
 ```
 
-There are overlaps between the areas of each party but also a very clear linear trend; the more a party favors a green policy the more they will favor a policy proposing higher taxation. 
+There are overlaps between the areas of each party but also a very clear linear trend; the more a party and its candidates favors a policy proposing higher taxation the more they will also favor a green environmentalist policy. 
 
-When we look at the summary tables, then each party has the following score on the indexes:
+When we look at the summary tables, then each party has the following score on the indices:
 
 ```{r, echo=FALSE}
 tab_indices_overview <- table_nums(name = "indices_overview",  caption = "Overview of party values on the indices")
@@ -268,7 +274,7 @@ tab_indices_overview <- table_nums(name = "indices_overview",  caption = "Overvi
 ##### `r tab_indices_overview`
 ```{r, echo = FALSE}
 index_party %>% arrange(tax_index) %>%
-  knitr::kable(col.names = c("Party", "Left-Right", "Green"), digits = 2)
+  knitr::kable(col.names = c("Party", "socialist-capitalist", "Green"), digits = 2)
 ```
 
 ```{r cor, echo = FALSE}
@@ -277,9 +283,9 @@ my_cor <- my_cor[1,2]
 my_cor <- round(my_cor, 2)
 ```
 
-As you can see the two indexes follow eachother very closely and they have a correlation of **`r my_cor`**, which is quite high.
+As you can see the two indices follow eachother very closely and they have a correlation of **`r my_cor`**, which is quite high.
 
-If I plot the two indexes against each other the pattern show very clearly:
+If I plot the two indices against each other then the pattern shows very clearly:
 
 ```{r, echo=FALSE}
 fig_party_placement <- figure_nums(name = "party_placement",  caption = "Party placement on the two indices")
@@ -325,21 +331,68 @@ my_fit %>% knitr::kable()
 ```
 
 
-**Discussion**     
-Part of the socialist agenda is controlling agenda. Controlling the means of production, controlling certain behaviours and so on. It is an agenda focused on the collective before the individual. Socialisms opposite, liberalism, on the other hand is focused on limiting control and government. It is an agenda focused on the individual before the collective.
+#### Discussion   
+I began the paper by introducing the question of wether the green movement was a sub-movement of the traditional socialist-capitalist ideology or a movement in its own right.
 
-The green agenda is also a "limiting" or "controlling" agenda. It is an agenda focused on changing peoples behaviour or habits so the people behave in a certain way - ie. eats only organic, recycles or drive electric vehicles. It therefore makes logical sense that the "red" and the "green" movement share a common ground.
+I introduced the discrepancy of both socialist and conservative views on the green movement and them both taking ownership of it. But even though the Danish conservatives might see themselves as green, they are not anyway near the level of the socialist parties in Denmark - even though they are the most green of the capitalist parties. Figure 1 and 2 clearly shows that. 
 
-Perhaps it is this common ground that we are actually measuring with the two indexes. That would explain why they follow eachother so closely. Maybe it is the underlying theme of the collective vs the individual that our two indexes are measuring. If this is true, then the green movement is now a separate movement but actually a submovement of the red movement.
+So it seems that the green environmentalist movement is not a movement in its own right, but rather a subset of the socialist-capitalist ideology.  This then begs the question: what can make two so apparently different policy areas such as taxation and the environment follow eachother so closely? 
 
-**Conclusion**     
-By creating an index to measure the postition of danish parties on the traditional "left-right" scale and a new index to measure the parties position on a "green" scale we see that these follow eachother very closely. In a danish context there does not seem to be a difference between red and green parties. They are in fact the same. Green is the new red.
+The answer might lie in the *moral foundations theory* proposed by Jonathan Haidt and his colleagues and elaborated upon in his book *The Rightous Mind* (Haidt 2012a). 
 
-**Acknowledgements**     
+The moral foundations that Haidt and his colleagues have uncovered are:
+
+1) Care/harm: This foundation is related to humans ability to feel (and dislike) the pain of others. It underlies virtues of kindness, gentleness, and nurturance.
+
+2) Fairness/cheating: This foundation is related to the evolutionary process of reciprocal altruism. It generates ideas of justice, rights, and autonomy.
+
+3) Loyalty/betrayal: This foundation is related to patriotism and self-sacrifice for the group. It is active anytime people feel that it's "one for all, and all for one."
+
+4) Authority/subversion: This foundation is related to leadership and followership, including deference to legitimate authority and respect for traditions.
+
+5) Sanctity/degradation: This foundation was shaped by the psychology of disgust and contamination. It underlies the widespread idea that the body is a temple which can be desecrated by immoral activities and contaminants.  
+
+Haidt later expanded the foundations (Haidt 2012a) to include a 6th one:
+
+6) Liberty/oppression: This foundation is about the feelings of reactance and resentment people feel toward those who dominate them and restrict their liberty.
+
+The points above are paraphrased from moralfoundations.org (moralfoundations.org 2018).
+
+And it is this foundation that might shed some light on why socialism and environmentalism follow eachother so closely. 
+
+Part of the socialist agenda is controlling agenda. Controlling the means of production, controlling certain behaviours and controlling people as we witnessed in socialist countries up through the 20th century. It is an agenda focused on the collective before the individual. Socialisms opposite, liberalism, on the other hand is focused on limiting control and government. It is an agenda focused on the individual before the collective. 
+
+The green agenda is also a "limiting" or "controlling" agenda. It is an agenda focused on changing peoples behaviour or habits so the people behave in a certain way - ie. eats only organic, recycles or drive electric vehicles. 
+
+It therefore makes sense that the "red" and the "green" movement share a common ground: the approximately same place on Haidts Liberty/oppression foundation.
+
+Perhaps it is this common ground that we are actually measuring with the two indices. That would explain why they follow eachother so closely. Maybe it is the underlying theme of the collective vs the individual - liberty vs oppression - that our two indices are measuring. If this is true, then the green movement is not a separate movement but actually a submovement of the socialist and thereby collectivist movement.
+
+#### Conclusion   
+By creating an index to measure the postition of danish parties on the traditional "socialist-capitalist" scale and a new index to measure the parties position on a "green" scale we see that these follow eachother very closely. In a Danish context there does not seem to be a difference between red and green parties. They are in fact the same.
+
+#### Acknowledgements 
 Special acknowledgement should go to Altinget who collected the data from all the candidates.
 
-**References**  
-Congleton, Roger. (2003). The Median Voter Model. 707-712. DOI: 10.1007/978-0-306-47828-4_142.      
-Wikipedia 2017-01-01 https://en.wikipedia.org/wiki/Cronbach%27s_alpha       
+#### References 
+Congleton, Roger (2003). The Median Voter Model. 707-712. DOI: 10.1007/978-0-306-47828-4_142.      
+
+Enhedslisten (2018). Delprogram: Miljøkampen. Accessed: 2018-02-04 https://enhedslisten.dk/programmer/delprogram-miljoekampen
+
+Haidt, Jonathan (2012a). The Righteous Mind: Why Good People Are Divided By Politics and Religion. New York: Pantheon Books.
+
+Haidt, Jonanthan (2012b). Understanding Libertarian Morality: The Psychological Dispositions of Self-Identified Libertarians. Accessed 2018-02-04 https://doi.org/10.1371/journal.pone.0042366
+
+moralfoundations.org (2018). Homepage. Accessed 2018-02-04 http://www.moralfoundations.org/
+
+Pedersen, Søren Hviid (2014). De konservative og miljøet. Accessed: 2018-02-04 https://www.b.dk/kommentarer/de-konservative-og-miljoeet
+
+Wikipedia (2018). Cronbach's alpha. Accessed: 2018-01-01 https://en.wikipedia.org/wiki/Cronbach%27s_alpha       
+
 Yockey, Ronald D. (2008). SPSS Demystified. A Step-by-Step Guide to Successful Data Analysis,
 Upper Saddle River: Pearson Prentice Hall.     
+
+
+
+
+
