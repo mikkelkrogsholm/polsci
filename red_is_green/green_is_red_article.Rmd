@@ -1,7 +1,7 @@
 ---
 output:
-  html_document: default
   word_document: default
+  html_document: default
 bibliography: bibliography.bib
 ---
 Research Article   
@@ -15,14 +15,20 @@ Submitted `r format(Sys.Date(), "%d, %m, %Y")`
 <br>
 
 #### Abstract
-By using data collected from candidates from the danish municipal election in 2017 and creating two indices - one for the traditional "socialist-capitalist" scale and one for a new "green" scale - I show that the two follow each other very closely and are almost interchangeable. The "reddest" parties are indeed also the "greenest". 
+By using voting advice application data collected from candidates from the danish municipal election in 2017 and creating two indices - one for the traditional "socialist-capitalist" scale and one for a new "green" scale - I show that the two follow each other very closely and are almost interchangeable. The "reddest" parties are indeed also the "greenest". 
 
-**Key words**: socialist-capitalist scale, left-right scale, socialism, capitalism, liberalism, green movement
+**Key words**: socialist-capitalist scale, left-right scale, socialism, capitalism, liberalism, green movement, voting advice application
 
 #### Introduction
 This paper looks into the relationship between the "red" and the "green" political ideologies. By creating indices that measure the two I look at how closely they are related in a danish context. 
 
-Because, where does the green movement belong? Is the green movement a separate independent movement or does it actually belong as a subset to the older "socialist-capitalist" ideologies that traditionally have been mostly concerned with questions of redistribution of wealth?
+"Arguably, the most important dimension structuring political contestation in both theoretical models and substantive descriptions of party competition, at least in Western Europe, is the left-right dimension" [@evans2013political]. This left-right dimension has traditionally been seen as a socio-economic dimension capturing greater or lesser government regulation of the market and redistribution of wealth. It is interchangeable with a socialist-capitalist dimension, what I here call the red political ideology - in my terminology, red and socialist are the same.
+
+But many scholars have argued that the socialist-capitalist dimension cannot stand alone [@inglehart1971silent; @kitschelt1994transformation; @kitschelt1997radical; @kriesi2006globalization; @kriesi2008west] and that "party competition in most polities is structured by a second orthogonal dimension, tapping cultural, communal, and environmental issues." [@evans2013political]. Here I am looking at the environmental issues, what I call the "green" ideology or movement. 
+
+> "There is an ongoing debate about the exact substantive meaning of these dimensions and whether party competition can be presented as uni-dimensional with left-right as a ‘super’ dimension structuring contestation among parties, or whether a second (or multiple) dimensions are required to adequately characterize competition among parties." - @evans2013political
+
+So, where does the green movement belong? Is the green movement indeed a separate and independent movement that moves perpendicular to the traditional "socialist-capitalist" dimension or is it actually just a subset of the left-right "super dimension"? If it is an independent movement then placing the parties in space along several indices will provide a better and more detailed mapping of the parties in relation with each other, whereas if it is merely a sub-ideology of the "super dimension" then a separate "green" distinction will not add any additional knowledge.
 
 In Denmark we often associate the green movement with the socialist leaning parties and the most socialist party in the Danish parliament "The Red-Green Alliance" even bears the word "green" it in its name. But now and again we also hear about how green the danish conservatives are [@pedersen_2014], even though the conservatives are firmly planted on the capitalist side of the traditional socialist-capitalist political spectrum.
 
@@ -33,7 +39,7 @@ Danish conservative thinkers on the other hand see the care for the environment 
 So where does the green movement belong? As an independent movement that unites both conservatives and socialists or is it in fact just a sub-movement of the larger socialist-capitalist ideological spectrum?
 
 #### Method  
-The survey data used in this article comes from the danish political news site [Altinget](https://www.altinget.dk/kandidater/kv17/). Every election they create so called *candidate tests* that try to match voters with likely candidates. Altinget has done this for several of the previous municipal, regional and national elections.
+The voting advice application data used in this article comes from the danish political news site [Altinget](https://www.altinget.dk/kandidater/kv17/). Every election they create a so called voting advice application [@wikipedia_2018_vaa] that try to match voters with likely candidates. Altinget has done this for several of the previous municipal, regional and national elections.
 
 The way it works is this: The candidates all get a micro-site on Altinget that they can fill out with information about themselves, their political views, etc. You can see an example of such a micro site below:
 
@@ -47,18 +53,18 @@ fig_micro_site <- figure_nums(name = "micro_site",  caption = "Example of a cand
 ##### `r fig_micro_site`
 ![](micro_site.png)
 
-The candidates also fill in the above mentioned candidate test. This test has questions regarding different political issues and can be answered on a 5 point scale. The results of the test can then be used by the voters to discover candidates they agree or disagree with. Both candidates and voters fill out the same survey and the results are then compared with each other to find the best match in political convictions.
+The candidates also fill in the above mentioned voting advice application. This application has questions regarding different political issues and can be answered on a 5 point scale. The results of the application can then be used by the voters to discover candidates they agree or disagree with. Both candidates and voters fill out the same application and the results are then compared with each other to find the best match in political convictions.
 
 ```{r, echo=FALSE}
 fig_match <- figure_nums(name = "match",  caption = "Example of match between voters and candidates")
 ```
 
-In the figure below is an example of a match between a voter and candidates in a Copenhagen Municipality. The math behind the matching done by Altinget is not made publicly available.
+In the figure below is an example of a match between a voter and candidates in a Copenhagen Municipality. The math behind the voting advice application done by Altinget is not made publicly available.
 
 ##### `r fig_match`
 ![](match.png)
 
-This data used in this article is from the answers to the candidate test for the nationwide municipal election in Denmark in November of 2017.
+This data used in this article is from the answers to the voting advice application for the nationwide municipal election in Denmark in November of 2017.
 
 ```{r load_data, message=FALSE, warning=FALSE, include=FALSE}
 library(tidyverse)
@@ -145,7 +151,7 @@ tax <- c("q_01", "q_03","q_04", "q_05")
 questions %>% filter(q %in% tax) %>%  knitr::kable(col.names = c("ID", "Danish wording", "English translation"))
 ```
 
-Many scholars have argued that the socialist-capitalist dimension cannot stand alone [@inglehart1971silent; @kitschelt1994transformation; @kitschelt1997radical; @kriesi2006globalization; @kriesi2008west] and that "party competition in most polities is structured by a second orthogonal dimension, tapping cultural, communal, and environmental issues." [@evans2013political]. Therefore I am building a second green index to see if this is indeed a seperate orthogonal dimension in Danish politics. And the green axis is build with the candidates answers to the following questions:
+Many scholars have argued that the socialist-capitalist dimension cannot stand alone [@inglehart1971silent; @kitschelt1994transformation; @kitschelt1997radical; @kriesi2006globalization; @kriesi2008west] and that "party competition in most polities is structured by a second orthogonal dimension, tapping cultural, communal, and environmental issues." [@evans2013political]. Therefore I am building a second green index to see if this is indeed a separate orthogonal dimension in Danish politics. And the green axis is build with the candidates answers to the following questions:
 
 ```{r, echo=FALSE}
 tab_green <- table_nums(name = "green",  caption = "Questions used for green index")
@@ -378,7 +384,7 @@ Haidt and his colleagues later expanded the foundations [@iyer2012understanding]
 
 6) Liberty/oppression: This foundation is about the feelings of reactance and resentment people feel toward those who dominate them and restrict their liberty.
 
-The points above are paraphrased from moralfoundations.org [@moralfoundations.org].
+The points above are paraphrased from moralfoundations.org [@moralfoundations_org].
 
 And it is this foundation that might shed some light on why socialism and environmentalism follow each other so closely. 
 
